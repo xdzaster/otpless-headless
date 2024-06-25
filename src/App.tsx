@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 interface OTPLessUserInfo {
@@ -9,14 +9,14 @@ interface OTPLessUserInfo {
 function App() {
   const [OTPlessSignin, setOTPlessSignin] = useState<{ initiate?: any; }>({});
   const [userInfo, setUserInfo] = useState('')
-  const initializeSDK = useCallback(() => {
-    const callback = (otplessUser: OTPLessUserInfo) => {
+
+  const initializeSDK = () => {
+    window.otpless = (otplessUser: OTPLessUserInfo) => {
       console.log(otplessUser);
       setUserInfo(otplessUser.status)
     }
-    console.log(new window.OTPless(callback))
-    setOTPlessSignin(new window.OTPless(callback));
-  }, []);
+    setOTPlessSignin(new window.OTPless(window.otpless));
+  };
 
   useEffect(() => {
     const script = document.createElement("script");

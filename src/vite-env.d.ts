@@ -2,4 +2,5 @@
 
 interface Window {
     OTPless: any;
+    otpless: any;
 }
