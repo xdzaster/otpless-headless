@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 
-function App() {
-  const [OTPlessSignin, setOTPlessSignin] = useState(null);
-  const [userInfo, setUserInfo] = useState(undefined)
+interface OTPLessUserInfo {
+  status: string;
+}
 
+
+function App() {
+  const [OTPlessSignin, setOTPlessSignin] = useState<{ initiate?: any; }>({});
+  const [userInfo, setUserInfo] = useState('')
   const initializeSDK = useCallback(() => {
-    window.otpless = (otplessUser) => {
+    const callback = (otplessUser: OTPLessUserInfo) => {
       console.log(otplessUser);
       setUserInfo(otplessUser.status)
-    };
-
-    setOTPlessSignin(new window.OTPless(window.otpless));
+    }
+    console.log(new window.OTPless(callback))
+    setOTPlessSignin(new window.OTPless(callback));
   }, []);
 
   useEffect(() => {
@@ -41,7 +45,6 @@ function App() {
   return (
     <>
       <h1>{userInfo && userInfo}</h1>
-
       <button
         onClick={oAuth}
       >
