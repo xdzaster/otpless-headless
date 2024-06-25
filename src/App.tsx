@@ -48,7 +48,7 @@ function App() {
       <button
         onClick={oAuth}
       >
-        Verify OTP
+        Login
       </button>
     </>
   )
