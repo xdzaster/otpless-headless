@@ -1,33 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [OTPlessSignin, setOTPlessSignin] = useState(null);
+  const [userInfo, setUserInfo] = useState(undefined)
+
+  const initializeSDK = useCallback(() => {
+    window.otpless = (otplessUser) => {
+      console.log(otplessUser);
+      setUserInfo(otplessUser.status)
+    };
+
+    setOTPlessSignin(new window.OTPless(window.otpless));
+  }, []);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.id = "otpless-sdk";
+    script.src = "https://otpless.com/v2/headless.js";
+    script.setAttribute("data-appid", "Q6N0L4ZKTTSV6R8OVPBA");
+    script.onload = initializeSDK;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const oAuth = async () => {
+    if (!OTPlessSignin) return;
+
+    const res = await OTPlessSignin.initiate({
+      channel: "OAUTH",
+      channelType: 'WHATSAPP',
+    })
+    console.log(res)
+  };
+
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>{userInfo && userInfo}</h1>
+
+      <button
+        onClick={oAuth}
+      >
+        Verify OTP
+      </button>
     </>
   )
 }
