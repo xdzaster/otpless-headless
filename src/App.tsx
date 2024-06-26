@@ -5,17 +5,16 @@ interface OTPLessUserInfo {
   status: string;
 }
 
-
 function App() {
-  const [OTPlessSignin, setOTPlessSignin] = useState<{ initiate?: any; }>({});
+  const [OTPlessSignin, setOTPlessSignin] = useState<{ initiate: any; } | undefined>(undefined);
   const [userInfo, setUserInfo] = useState('')
 
   const initializeSDK = () => {
-    window.otpless = (otplessUser: OTPLessUserInfo) => {
+    const callback = (otplessUser: OTPLessUserInfo) => {
       console.log(otplessUser);
       setUserInfo(otplessUser.status)
     }
-    setOTPlessSignin(new window.OTPless(window.otpless));
+    setOTPlessSignin(new window.OTPless(callback));
   };
 
   useEffect(() => {
@@ -31,14 +30,15 @@ function App() {
     };
   }, []);
 
-  const oAuth = async () => {
+  const oAuth = () => {
     if (!OTPlessSignin) return;
 
-    const res = await OTPlessSignin.initiate({
+    OTPlessSignin.initiate({
       channel: "OAUTH",
       channelType: 'WHATSAPP',
+    }).then((res: any) => {
+      console.log('initiate response', res)
     })
-    console.log(res)
   };
 
 
